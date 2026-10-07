@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Videos para cuidar en casa · CESFAM N°5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#EEF4F2;
+    --tinta:#1A2B30;
+    --suave:#4A5D63;
+    --marca:#0D5653;
+    --boton:#F2B632;
+    --blanco:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--fondo);
+    color:var(--tinta);
+    font-family:"Atkinson Hyperlegible",Verdana,Arial,sans-serif;
+    font-size:1.25rem;
+    line-height:1.5;
+    padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+  }
+  header{
+    background:var(--marca);
+    color:var(--blanco);
+    padding:2rem 1.25rem 2.25rem;
+  }
+  .ancho{max-width:46rem;margin:0 auto}
+  .centro{font-size:1.05rem;opacity:.9;margin:0 0 .5rem}
+  h1{font-size:clamp(2rem,6vw,2.75rem);line-height:1.15;margin:0 0 .75rem}
+  header p.intro{font-size:1.3rem;margin:0;max-width:34rem}
+  main{padding:1.75rem 1.25rem 3rem}
+  ul.videos{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+  .tarjeta{
+    width:100%;
+    display:grid;
+    grid-template-columns:5.5rem 1fr;
+    gap:1.1rem;
+    align-items:center;
+    text-align:left;
+    background:var(--blanco);
+    border:3px solid transparent;
+    border-radius:1.25rem;
+    padding:1.1rem;
+    font:inherit;
+    color:inherit;
+    cursor:pointer;
+  }
+  .tarjeta:hover{border-color:var(--marca)}
+  .tarjeta:focus-visible{outline:4px solid var(--boton);outline-offset:3px}
+  .icono{
+    width:5.5rem;height:5.5rem;border-radius:1rem;
+    display:grid;place-items:center;
+  }
+  .icono svg{width:3rem;height:3rem}
+  .tarjeta h2{font-size:1.4rem;line-height:1.25;margin:0 0 .3rem}
+  .tarjeta p{font-size:1.1rem;color:var(--suave);margin:0 0 .75rem}
+  .ver{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:var(--boton);color:var(--tinta);
+    font-weight:700;font-size:1.15rem;
+    padding:.55rem 1.1rem;border-radius:999px;
+  }
+  .ver svg{width:1.1rem;height:1.1rem}
+  footer{font-size:1.05rem;color:var(--suave);padding:0 1.25rem 2.5rem}
+
+  /* Reproductor */
+  .reproductor{
+    position:fixed;inset:0;z-index:10;
+    background:var(--tinta);color:var(--blanco);
+    display:none;flex-direction:column;
+    padding:calc(env(safe-area-inset-top,0px) + 1rem) 1rem calc(env(safe-area-inset-bottom,0px) + 1rem);
+    overflow-y:auto;
+  }
+  .reproductor.abierto{display:flex}
+  .volver{
+    align-self:flex-start;
+    background:var(--boton);color:var(--tinta);
+    border:none;border-radius:999px;
+    font:inherit;font-weight:700;font-size:1.3rem;
+    padding:.8rem 1.5rem;cursor:pointer;
+    display:inline-flex;align-items:center;gap:.6rem;
+  }
+  .volver:focus-visible{outline:4px solid var(--blanco);outline-offset:3px}
+  .reproductor .ancho{width:100%}
+  .reproductor h2{font-size:1.6rem;line-height:1.25;margin:1.25rem 0 1rem}
+  .marco{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:.75rem;overflow:hidden}
+  .marco iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .pendiente{
+    position:absolute;inset:0;display:grid;place-items:center;
+    text-align:center;padding:1.5rem;font-size:1.25rem;
+  }
+  .reproductor p.desc{font-size:1.2rem;margin:1rem 0 0;max-width:40rem}
+
+  @media (min-width:44rem){
+    .tarjeta{grid-template-columns:7rem 1fr;padding:1.4rem}
+    .icono{width:7rem;height:7rem}
+    .icono svg{width:3.75rem;height:3.75rem}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .tarjeta{transition:border-color .15s}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ancho">
+    <p class="centro">CESFAM N°5 · Programa de Dependencia Severa</p>
+    <h1>Videos para cuidar en casa</h1>
+    <p class="intro">Toque el video que quiera ver. Se abre aquí mismo, sin claves ni pasos extra.</p>
+  </div>
+</header>
+
+<main>
+  <div class="ancho">
+    <ul class="videos" id="lista"></ul>
+  </div>
+</main>
+
+<footer>
+  <div class="ancho">Si tiene dudas sobre los cuidados, consulte con el equipo de su CESFAM.</div>
+</footer>
+
+<div class="reproductor" id="reproductor" role="dialog" aria-modal="true" aria-labelledby="titulo-video">
+  <div class="ancho">
+    <button class="volver" id="volver" type="button">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Volver a los videos
+    </button>
+    <h2 id="titulo-video"></h2>
+    <div class="marco" id="marco"></div>
+    <p class="desc" id="desc-video"></p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   EDITE AQUÍ: pegue el código de cada video de YouTube en "youtube".
+   Ejemplo: si el enlace es https://youtu.be/AbC123xYz,
+   el código es  AbC123xYz
+   ============================================================ */
+const VIDEOS = [
+  {
+    titulo: "Cuidados de una persona con dependencia",
+    descripcion: "Los cuidados básicos del día a día: higiene, postura y prevención de heridas.",
+    youtube: "",
+    color: "#D8ECF5",
+    icono: '<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z" fill="#1F6C8C"/>'
+  },
+  {
+    titulo: "Nutrición consciente",
+    descripcion: "Cómo preparar y ofrecer la alimentación de forma segura y nutritiva.",
+    youtube: "",
+    color: "#E3F0D6",
+    icono: '<path d="M12 4c-1 2-1 3 0 4M8 9h8a4 4 0 0 1 0 8H8a4 4 0 0 1 0-8z" fill="none" stroke="#3E6B1F" stroke-width="2" stroke-linecap="round"/><path d="M6 20h12" stroke="#3E6B1F" stroke-width="2" stroke-linecap="round"/>'
+  },
+  {
+    titulo: "Cuidando sonrisas",
+    descripcion: "Higiene de la boca y cuidado de las prótesis dentales.",
+    youtube: "",
+    color: "#FBEFCF",
+    icono: '<circle cx="12" cy="12" r="9" fill="none" stroke="#8A5A00" stroke-width="2"/><path d="M7.5 13.5a5 5 0 0 0 9 0" fill="none" stroke="#8A5A00" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="9.5" r="1.2" fill="#8A5A00"/><circle cx="15" cy="9.5" r="1.2" fill="#8A5A00"/>'
+  },
+  {
+    titulo: "Movilización de personas con dependencia",
+    descripcion: "Cómo mover, girar y trasladar a la persona sin lastimarla ni lastimarse.",
+    youtube: "",
+    color: "#EDE2F3",
+    icono: '<circle cx="12" cy="5" r="2.2" fill="#6A3D86"/><path d="M12 8v6m0 0l-3 6m3-6l3 6M7 11h10" fill="none" stroke="#6A3D86" stroke-width="2" stroke-linecap="round"/>'
+  },
+  {
+    titulo: "Cuidados de fin de vida y duelo",
+    descripcion: "Acompañar con cariño en la etapa final y cuidarse en el duelo.",
+    youtube: "",
+    color: "#F6E0DA",
+    icono: '<path d="M12 20c-4-3-6-6-6-9a6 6 0 0 1 12 0c0 3-2 6-6 9z" fill="none" stroke="#8C3B2A" stroke-width="2"/><path d="M12 9v5" stroke="#8C3B2A" stroke-width="2" stroke-linecap="round"/>'
+  }
+];
+
+const lista = document.getElementById("lista");
+const reproductor = document.getElementById("reproductor");
+const marco = document.getElementById("marco");
+const titulo = document.getElementById("titulo-video");
+const desc = document.getElementById("desc-video");
+const volver = document.getElementById("volver");
+let ultimoBoton = null;
+
+const play = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>';
+
+VIDEOS.forEach((v, i) => {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <button class="tarjeta" type="button" data-i="${i}">
+      <span class="icono" style="background:${v.color}">
+        <svg viewBox="0 0 24 24" aria-hidden="true">${v.icono}</svg>
+      </span>
+      <span>
+        <h2>${v.titulo}</h2>
+        <p>${v.descripcion}</p>
+        <span class="ver">${play} Ver video</span>
+      </span>
+    </button>`;
+  lista.appendChild(li);
+});
+
+lista.addEventListener("click", e => {
+  const btn = e.target.closest(".tarjeta");
+  if (btn) abrir(Number(btn.dataset.i), btn);
+});
+
+function abrir(i, btn){
+  const v = VIDEOS[i];
+  ultimoBoton = btn;
+  titulo.textContent = v.titulo;
+  desc.textContent = v.descripcion;
+  if (v.youtube.trim()){
+    marco.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.youtube.trim())}?autoplay=1&rel=0&playsinline=1"
+      title="${v.titulo}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  } else {
+    marco.innerHTML = `<div class="pendiente">Este video estará disponible pronto.</div>`;
+  }
+  reproductor.classList.add("abierto");
+  document.body.style.overflow = "hidden";
+  volver.focus();
+}
+
+function cerrar(){
+  marco.innerHTML = "";               // detiene el video
+  reproductor.classList.remove("abierto");
+  document.body.style.overflow = "";
+  if (ultimoBoton) ultimoBoton.focus();
+}
+
+volver.addEventListener("click", cerrar);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && reproductor.classList.contains("abierto")) cerrar();
+});
+</script>
+</body>
+</html>
